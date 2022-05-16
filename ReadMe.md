@@ -1,9 +1,9 @@
 # This is the deployment package of intent_map
 To run it properly, please config it properly.
 
-In config.json, we defines the server ip address and client ip address. Server and Client are connencted via P2P direct connection.
+In config.json, we define the server ip address and client ip address. Server and Client are connencted via P2P direct connection.
 
-source and target are the starting point and target point of the navigation. Either source or target is an Exit type. "id", "floorplanId" and "type" must be given.
+source and target are the starting point and target point of the navigation. Either source or target is an Exit type. "id", "floorplanId" and "type" fields must be given.
 ```
 struct Exit{ # One specific Exit
     id @5 :Text; #global exclusive id 
@@ -40,8 +40,7 @@ struct Exit{ # One specific Exit
   }
 }
 ```
-
-In map.json, it defines the floorplan connections. More details, see map.json.
+map.json defines the floorplan connections. More details, see map.json.
 ### Running Steps
 * In server side, run ros. 
 ```
