@@ -1,0 +1,136 @@
+[{
+    "name": "COM1_L1.png",
+    "id": "com1_l1",
+    "width": 997,
+    "height": 580,
+    "resolution": 0.129000,
+    "floor": 1,
+    "exits" : [
+        {
+            "id": "com1_l1_lobby",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 526,
+                "y": 300
+            },
+            "connection": "com1_l1_lobby_outdoor"
+        },
+        {
+            "id": "com1_l1_tocom2",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 986,
+                "y": 224
+            },
+            "connection": "com1_l1_tocom2_outdoor"
+        },
+        {
+            "id": "com1_l1_stair5",
+            "type": "stairs",
+            "margin": 20,
+            "position": {
+                "x": 345,
+                "y": 36
+            },
+            "connection": "com1_l2_stair5"
+        },
+        {
+            "id": "com1_l1_linkway",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 70,
+                "y": 88
+            },
+            "connection": "com1_l1_outdoor"
+        },
+        {
+            "id": "com1_l1_outdoor",
+            "type": "outdoor",
+            "margin": 20,
+            "gps": {
+                "latitude": 1.29551409020476,
+                "longitude": 103.77359471468624
+            }
+        },
+        {
+            "id": "com1_l1_lobby_outdoor",
+            "type": "outdoor",
+            "margin": 20,
+            "gps": {
+                "latitude": 1.2949503692918012, 
+                "longitude": 103.77356426597748
+            }
+        },
+        {
+            "id": "com1_l1_tocom2_outdoor",
+            "type": "outdoor",
+            "margin": 20,
+            "gps": {
+                "latitude": 1.2945398628566285, 
+                "longitude": 103.77406650766535
+            }
+        }
+    ]
+},
+{
+    "name": "COM1_L2.png",
+    "id": "com1_l2",
+    "width": 997,
+    "height": 580,
+    "resolution": 0.129000,
+    "floor": 2,
+    "exits" : [
+        {
+            "id": "com1_l2_stair5",
+            "type": "stairs",
+            "margin": 20,
+            "position": {
+                "x": 320,
+                "y": 44
+            },
+            "connection": "com1_l1_stair5"
+        },
+        {
+            "id": "com1_l2_linkway",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 71,
+                "y": 124
+            },
+            "connection": "com1_l2_outdoor"
+        },
+        {
+            "id": "com1_l2_foyer",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 997,
+                "y": 580
+            },
+            "connection": "None"
+        },
+        {
+            "id": "com1_l2_lobby",
+            "type": "linkway",
+            "margin": 20,
+            "position": {
+                "x": 526,
+                "y": 300
+            },
+            "connection": "None"
+        },
+        {
+            "id": "com1_l2_outdoor",
+            "type": "outdoor",
+            "margin": 20,
+            "gps": {
+                "latitude": 1.2953665728338317, 
+                "longitude": 103.77351743959628
+            }
+        }
+    ]
+}]
