@@ -54,7 +54,7 @@ roslaunch roslaunch/floorplan_to_gridmap.launch
 ```
 ./run_gui.sh
 # new terminal, run client
-./dist_x86_64/ros_bridge/client
+./dist_x86_64/client/client
 ```
 ## FAQ
 ### opencv issue on jetson
