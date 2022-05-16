@@ -1,0 +1,6 @@
+image_to_gridmap_demo:
+  image_topic: "/floorplan/image"
+  resolution: 0.129
+  map_frame_id: "map"
+  min_height: -0.3
+  max_height: 0.3

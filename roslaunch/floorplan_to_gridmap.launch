@@ -1,0 +1,25 @@
+<launch>
+  <arg name="basedir" value="/home/unomove/deploy_intentmap/roslaunch" />
+  <rosparam command="load" file="$(arg basedir)/image_to_gridmap_demo.yaml" />
+
+  
+  <param name="robot_description" command="$(find xacro)/xacro $(find spot_description)/urdf/spot.urdf.xacro" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <!-- Launch the grid map image to grid map demo node. -->
+  <node pkg="grid_map_demos" type="image_to_gridmap_demo" name="image_to_gridmap_demo" output="screen" />
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" >
+    <rosparam file="$(arg basedir)/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(arg basedir)/inet_global_costmap_params.yaml" command="load"/>
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="1.0" />
+    <param name="planner_patience" value="5.0" />
+  </node>
+
+  <!-- Run fake localization compatible with AMCL output -->
+  <node pkg="fake_localization" type="fake_localization" name="fake_localization" output="screen" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg basedir)/test.rviz" />
+</launch>
