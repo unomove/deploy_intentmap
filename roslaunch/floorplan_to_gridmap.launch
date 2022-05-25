@@ -1,5 +1,5 @@
 <launch>
-  <arg name="basedir" value="/home/unomove/deploy_intentmap/roslaunch" />
+  <arg name="basedir" value="/home/gaowei/deploy_intentmap/roslaunch" />
   <rosparam command="load" file="$(arg basedir)/image_to_gridmap_demo.yaml" />
 
   
@@ -18,8 +18,57 @@
     <param name="planner_patience" value="5.0" />
   </node>
 
-  <!-- Run fake localization compatible with AMCL output -->
-  <node pkg="fake_localization" type="fake_localization" name="fake_localization" output="screen" />
+  <!-- In order to use robot localization, one should remove all the tfs related to odom and map, odom and baselink-->
+  <!-- Filter raw gyro, accel and mag data into a usable orientation -->
+  <node name="imu_filter" pkg="imu_filter_madgwick" type="imu_filter_node" >
+    <rosparam command="load" file="$(arg basedir)/imu_calibration.yaml" />
+    <param name="orientation_stddev" value="0.001" />
+    <param name="gain" value="0.01" />
+    <param name="zeta" value="0.001" />
+    <param name="publish_tf" value="false" />
+    <remap from="imu/data_raw" to="/mavros/imu/data_raw" />
+    <remap from="imu/mag" to="/mavros/imu/mag" />
+  </node>
+  <!-- Local frame localization -->
+  <node name="ekf_local_odom" pkg="robot_localization" type="ekf_localization_node" >
+    <rosparam command="load" file="$(arg basedir)/ekf_local.yaml" />
+    <remap from="odometry/filtered" to="odometry/local" />
+  </node>
 
-  <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(arg basedir)/test.rviz" /-->
+  <!-- Global Use-->
+    <!-- Global frame localization -->
+  <node name="ekf_global_odom" pkg="robot_localization" type="ekf_localization_node" >
+    <rosparam command="load" file="$(arg basedir)/ekf_global.yaml" />
+
+    <!-- Publications -->
+    <remap from="odometry/filtered" to="odometry/global" />
+  </node>
+
+  <!-- Integrating GPS -->
+  <node name="navsat_transform_node" pkg="robot_localization" type="navsat_transform_node" output="screen" >
+    <!-- Correction to make IMU read 0 when facing east -->
+    <param name="yaw_offset" value="0" />
+    <!-- Magnetic Declination for your location - see http://www.ngdc.noaa.gov/geomag-web -->
+    <param name="magnetic_declination_radians" value="0.2516183" />
+    <!-- Pretend world is flat -->
+    <param name="zero_altitude" value="true" />
+    <!-- Publish a faster GPS output -->
+    <param name="publish_filtered_gps" value="false" />
+    <param name="frequency" value="10.0" />
+    <!-- Use IMU, not odometry, for yaw -->
+    <param name="use_odometry_yaw" value="false" />
+
+    <!-- Subscriptions -->
+    <remap from="imu/data" to="imu/data" />
+    <remap from="gps/fix" to="gps/fix" />
+    <remap from="odometry/filtered" to="odometry/global" />
+
+    <!-- Publications -->
+    <remap from="gps/filtered" to="gps/filtered" />
+    <remap from="odometry/gps" to="odometry/gps" />
+  </node>
+  <!-- Run fake localization compatible with AMCL output, Used for debug only -->
+  <!--node pkg="fake_localization" type="fake_localization" name="fake_localization" output="screen" /-->
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg basedir)/test.rviz" />
 </launch>
