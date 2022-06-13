@@ -141,11 +141,11 @@ Visualization Manager:
         Alpha: 1
         Axes Length: 1
         Axes Radius: 0.10000000149011612
-        Color: 92; 53; 102
+        Color: 0; 255; 0
         Head Length: 0.30000001192092896
         Head Radius: 0.10000000149011612
         Shaft Length: 1
-        Shaft Radius: 0.05000000074505806
+        Shaft Radius: 0.5
         Value: Arrow
       Topic: /odometry/global
       Unreliable: false
@@ -202,7 +202,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15596.0712890625
+      Distance: 0.0010000000474974513
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -210,17 +210,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 18.1475772857666
-        Y: 1914.477783203125
-        Z: 1388.8642578125
+        X: -46.264461517333984
+        Y: -116.5403060913086
+        Z: 1040.064697265625
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3997960090637207
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 4.790395259857178
+      Yaw: 3.7153944969177246
     Saved: ~
 Window Geometry:
   Displays:

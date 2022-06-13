@@ -1,13 +1,13 @@
 {
-  "server":"192.168.249.5",
-  "client":"192.168.249.3",
+  "server":"127.0.0.1",
+  "client":"127.0.0.1",
   "source":{
     "id": "source",
     "floorplanId": "com1_l1",
     "type": "indoor",
     "position": {
-      "x": 764,
-      "y": 72
+      "x": 745,
+      "y": 105
     }
   },
   "target":{

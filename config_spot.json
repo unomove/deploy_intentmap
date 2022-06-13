@@ -1,0 +1,22 @@
+{
+  "server":"192.168.249.5",
+  "client":"192.168.249.3",
+  "source":{
+    "id": "source",
+    "floorplanId": "com1_l1",
+    "type": "indoor",
+    "position": {
+      "x": 764,
+      "y": 72
+    }
+  },
+  "target":{
+    "id": "target",
+    "type": "outdoor",
+    "floorplanId": "outdoor",
+    "gps": {
+      "latitude" : 1.2953665728338317,
+      "longitude": 103.77351743959628
+    }
+  }
+}

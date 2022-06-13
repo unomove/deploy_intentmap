@@ -61,3 +61,6 @@ https://github.com/ros-perception/vision_opencv/issues/345
 
 ### Jetson AutoFanControl
 https://github.com/Pyrestone/jetson-fan-ctl
+
+### Ros Sync Time
+https://www.layerstack.com/resources/tutorials/How-to-install-Network-Time-Sync-NTP-with-Chrony-on-Ubuntu20
