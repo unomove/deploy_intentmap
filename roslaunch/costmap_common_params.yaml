@@ -22,4 +22,3 @@ inflation_layer:
 # url: http://wiki.ros.org/costmap_2d/hydro/staticmap
 static_layer:
     map_topic: /image_to_gridmap_demo/map
-    first_map_only: false

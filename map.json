@@ -3,7 +3,7 @@
     "id": "com1_l1",
     "width": 997,
     "height": 580,
-    "resolution": 0.129000,
+    "resolution": 0.12,
     "floor": 1,
     "exits" : [
         {
@@ -32,7 +32,7 @@
             "margin": 20,
             "position": {
                 "x": 345,
-                "y": 36
+                "y": 55
             },
             "connection": "com1_l2_stair5"
         },
@@ -80,7 +80,7 @@
     "id": "com1_l2",
     "width": 997,
     "height": 580,
-    "resolution": 0.129000,
+    "resolution": 0.12,
     "floor": 2,
     "exits" : [
         {
@@ -89,7 +89,7 @@
             "margin": 20,
             "position": {
                 "x": 320,
-                "y": 44
+                "y": 76
             },
             "connection": "com1_l1_stair5"
         },

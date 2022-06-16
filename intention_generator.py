@@ -63,8 +63,10 @@ class Robot(object):
             self.plan_service = rospy.get_param(
                 '~plan_service', '/move_base/NavfnROS/make_plan')
         else:
+            # self.plan_service = rospy.get_param(
+            #     '~plan_service', '/global_planner/navfn_planner/make_plan')
             self.plan_service = rospy.get_param(
-                '~plan_service', '/global_planner/navfn_planner/make_plan')
+                '~plan_service', '/move_base/NavfnROS/make_plan')
 
         self.with_move_base = with_move_base
         if self.with_move_base:
@@ -162,7 +164,7 @@ class Planner(object):
         print ("init done!")
 
     def path_to_rdp(self, path):
-        print (path)
+        # print ('path', path)
         points = []
         for p in path.plan.poses:
             pts = pose(p)
@@ -251,7 +253,7 @@ class Planner(object):
         self.pts = array(pts)
 
     def cb_pose(self, msg):
-        print ("cb_pose")
+        # print ("cb_pose")
         self.robot.updatePosition(pose(msg.pose))
 
         # replan
@@ -278,9 +280,9 @@ class Planner(object):
         if dist < 0.3:
             intention = Planner.INTENTIONS_IDX[Planner.STOP]
         if angle_diff > Planner.min_angle:
-            intention = Planner.INTENTIONS_IDX[Planner.INPLACE_LEFT]
+            intention = Planner.INTENTIONS_IDX[Planner.LEFT]
         elif angle_diff < -Planner.min_angle:
-            intention = Planner.INTENTIONS_IDX[Planner.INPLACE_RIGHT]
+            intention = Planner.INTENTIONS_IDX[Planner.RIGHT]
         return intention
 
     def track_rdp(self):

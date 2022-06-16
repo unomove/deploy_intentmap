@@ -4,10 +4,12 @@ global_costmap:
     update_frequency: 2.0
     publish_frequency: 2.0
     rolling_window: false
+    static_map: true
     transform_tolerance: 0.5
     footprint_padding: 0.05
     resolution: 0.128
     map_type: costmap
+    always_send_full_costmap: true
   
     plugins:
     - {name: static_layer,        type: "costmap_2d::StaticLayer"}

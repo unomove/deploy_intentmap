@@ -51,11 +51,11 @@ class Pub:
         odom.header.frame_id = "odom"
 
         # set the position
-        odom.pose.pose = msg.pose
+        odom.pose.pose = msg.pose.pose
 
         # set the velocity
         odom.child_frame_id = "base_footprint"
-        odom.twist.twist = msg.twist
+        odom.twist.twist = msg.twist.twist
 
         # publish the message
         self.odom_pub.publish(odom)
