@@ -44,8 +44,11 @@ global G # map graph
 global milestone# global milestone in map graph
 global path #global path 
 milestone='source'
-pose_dat = messaging.new_message("pose")
-gps_dat = messaging.new_message('liveLocationKalman')
+# pose_dat = messaging.new_message("pose")
+###************************************####
+###This is the wrong use of global message with clear_write_flag() ####
+###It will continuously increases the bandwidth but I don't know why###
+# gps_dat = messaging.new_message('liveLocationKalman')
 
 # load floorplans
 # some JSON:
@@ -182,18 +185,18 @@ def handle_milestone(G, milestone):
     # Params().put("NavDestination", json.dumps(dest))
 
 def callback(msg):
-    global pose, pm, pose_dat, milestone, G, path
+    global pose, pm, milestone, G, path
     pose = msg.pose.pose.position
     quat = msg.pose.pose.orientation
     yaw = euler_from_quaternion(quat.x, quat.y, quat.z, quat.w)
     # print (pose, math.degrees(yaw))
+    pose_dat = messaging.new_message("pose")
     pose_dat.pose = {
       'x': pose.x,
       'y': pose.y,
       'theta': yaw
     }
     pm.send('pose', pose_dat)
-    pose_dat.clear_write_flag()
 
     # handle map graph state change
     print ("current heading milestone", milestone)
@@ -307,22 +310,22 @@ def floorplan_thread():
 # # in publisher
 # pm = messaging.PubMaster(['liveLocationKalman'])
 # dat = messaging.new_message('liveLocationKalman')
-gps_dat.liveLocationKalman = {
-  "gpsWeek":0,
-  "gpsTimeOfWeek":0,
-  "status":"uninitialized",
-  "unixTimestampMillis":1632948964999,
-  "inputsOK":True,
-  "gpsOK":False,
-  "velocityCalibrated":{
-    "value" : [29.00776253842281, -0.10930662366976479, 0.28999936306154739],
-    "std" : [0.22529312857341197, 0.34050586122310345, 0.19542205107799951],
-    "valid" : True },
-  "calibratedOrientationNED" : {
-    "value" : [0.00011318853898166816, -0.083885195422878811, -1.1017716045869208],
-    "std" : [nan, nan, nan],
-    "valid" : True }
-}
+# gps_dat.liveLocationKalman = {
+#   "gpsWeek":0,
+#   "gpsTimeOfWeek":0,
+#   "status":"uninitialized",
+#   "unixTimestampMillis":1632948964999,
+#   "inputsOK":True,
+#   "gpsOK":False,
+#   "velocityCalibrated":{
+#     "value" : [29.00776253842281, -0.10930662366976479, 0.28999936306154739],
+#     "std" : [0.22529312857341197, 0.34050586122310345, 0.19542205107799951],
+#     "valid" : True },
+#   "calibratedOrientationNED" : {
+#     "value" : [0.00011318853898166816, -0.083885195422878811, -1.1017716045869208],
+#     "std" : [nan, nan, nan],
+#     "valid" : True }
+# }
 
 def update_gps_dat(lat, lon, alt, ts):
   global gps_dat
@@ -347,14 +350,23 @@ def update_gps_dat(lat, lon, alt, ts):
 #       print(' ')  
 
 def bridge_gps(msg):
-  global gps_dat
+  # global gps_dat
+  gps_dat = messaging.new_message('liveLocationKalman')
   stamp = int(msg.header.stamp.to_sec() * 10e3)
   lat = msg.latitude
   lon = msg.longitude
   alt = msg.altitude
-  update_gps_dat(lat, lon, alt, stamp)
+  # update_gps_dat(lat, lon, alt, stamp)
+  gps_dat.liveLocationKalman.unixTimestampMillis = stamp
+  gps_dat.liveLocationKalman.positionGeodetic = {
+    "value" : [lat, lon, alt],
+    "std" : [nan, nan, nan],
+    "valid" : True
+  }
+  gps_dat.liveLocationKalman.gpsOK = True
+  gps_dat.liveLocationKalman.status = "valid"
+  print ("here")
   pm.send('liveLocationKalman', gps_dat)
-  gps_dat.clear_write_flag()
 
 def main():
   global pub_initial, pub_goal
