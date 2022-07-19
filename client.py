@@ -112,53 +112,61 @@ def handle_milestone(G, milestone):
     dest = {"latitude": float(coords[0]), "longitude": float(coords[1])}
     Params().put("NavDestination", json.dumps(dest))
 
-milestone='source'
+milestone='source' 
 path = nx.shortest_path(G, source=source['id'], target=target['id'], weight='weight') 
+# draw(G, path)
 milestone = path[1]
 print ("milestone", milestone)
 handle_milestone(G, milestone)
 
-while 1:
-  sm.update()
-  sm_remote.update()
-  if sm_remote.updated["pose"]:
+def main():
+  while 1:
+    global path, milestone, current_floorplan_id
+    sm.update()
+    sm_remote.update()
+    info_dat = messaging.new_message('info')
+    if sm_remote.updated["pose"]:
+      print (sm_remote['pose'])
+      node = G.nodes[milestone]
+      if node['floorplanId'] != "outdoor":
+        pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
+        # pos is already in real world, no need to multiply resolution. so pass 1.0 here.
+        radius = dist(pos, (sm_remote['pose'].x, sm_remote['pose'].y), 1.0)
+        info_dat.info = {
+          "msg" : f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m",
+          "path" : f"Remaining milestones to go: {'-->'.join(path[1:])}"
+        }
 
-    print (sm_remote['pose'])
-    print ("current heading milestone", milestone)
-    node = G.nodes[milestone]
-    if node['floorplanId'] != "outdoor":
-      pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
-      # pos is already in real world, no need to multiply resolution. so pass 1.0 here.
-      radius = dist(pos, (sm_remote['pose'].x, sm_remote['pose'].y), 1.0)
-      print (f"distance to milestone {radius} m")
-      info_dat = messaging.new_message('info')
-      info_dat.info = {
-        "msg" : f'current heading milestone {milestone}. distance to milestone {radius} m',
-        "path" : f"Remaining milestones to go: {'-->'.join(path[1:])}"
-      }
-      info_dat.info.msg = f'current heading milestone {milestone}. distance to milestone {radius} m'
-      print (f"resolution: {floorplan['resolution']}")
+        print (f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m")
+        if radius < node['margin']*floorplan['resolution']:
+          last_floorplan = node['floorplanId']
+          # change state
+          path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
+          info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
+          milestone = path[1]
+          handle_milestone(G, milestone)
+          # draw(G, path)
 
-      if radius < node['margin']*floorplan['resolution']:
-        # change state
-        path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
-        info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
-        print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
-        milestone = path[1]
-        handle_milestone(G, milestone)
-        draw(G, path)
-      pm.send('info', info_dat)
-  if sm_remote.updated["state"]:
-    print (sm_remote['state'])
-    if sm_remote['state'].floorplanId != current_floorplan_id and sm_remote['state'].floorplanId != "outdoor":
-      floorplan_msg = messaging.new_message('floorplan')
-      current_floorplan_id = sm_remote['state'].floorplanId
-      floorplan_msg.floorplan = floorplans[current_floorplan_id]
-      # for i in range(4): # need to publish multiple times to make sure ros update the floorplan.
-      print ("new floorplan", floorplan_msg)
-      print (f"resolution: {floorplans[current_floorplan_id]['resolution']}")
-      pm.send("floorplan", floorplan_msg)
-  if sm_remote.updated['liveLocationKalman']:
-    print (sm_remote['liveLocationKalman'])
-  # print(sm['liveLocationKalman'])
-  print ("#####################################")
+    if sm_remote.updated["state"]:
+      print (sm_remote['state'])
+      if sm_remote['state'].floorplanId != current_floorplan_id and sm_remote['state'].floorplanId != "outdoor":
+        floorplan_msg = messaging.new_message('floorplan')
+        current_floorplan_id = sm_remote['state'].floorplanId
+        floorplan_msg.floorplan = floorplans[current_floorplan_id]
+        # for i in range(4): # need to publish multiple times to make sure ros update the floorplan.
+        print ("new floorplan", floorplan_msg)
+        print (f"resolution: {floorplans[current_floorplan_id]['resolution']}")
+        # update milestone
+        while node['floorplanId'] != current_floorplan_id:
+          milestone = path[1]
+          handle_milestone(G, milestone)
+          node = G.nodes[milestone]
+          path = path[1:]
+        pm.send("floorplan", floorplan_msg)
+    if sm_remote.updated['liveLocationKalman']:
+      print (sm_remote['liveLocationKalman'])
+    # print(sm['liveLocationKalman'])
+    pm.send('info', info_dat)
+    print ("#####################################")
+
+main()

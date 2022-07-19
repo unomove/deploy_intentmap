@@ -42,8 +42,9 @@ global pub_goal
 global pose # robot pose
 global G # map graph
 global milestone# global milestone in map graph
-global path #global path 
+global path #global path
 milestone='source'
+
 # pose_dat = messaging.new_message("pose")
 ###************************************####
 ###This is the wrong use of global message with clear_write_flag() ####
@@ -133,7 +134,7 @@ def publish_initial_position(x, y, theta):
   initpose.pose.pose.orientation.z = quaternion[3]
   print ("initial", initpose)
   pub_initial.publish(initpose)
-  return 
+  return
 
 # Deprecated
 # def python_astar():
@@ -143,7 +144,7 @@ def publish_initial_position(x, y, theta):
 #     if sm.updated['floorplan']:
 #       # load the map
 #       gmap = OccupancyGridMap.from_png(os.path.join(ASSEST, sm['floorplan'].name), sm['floorplan'].resolution)
-      
+
 #       print ("resolution", sm['floorplan'].resolution)
 #       # # set a start and an end node (in meters)
 #       start_node = (525.0*sm['floorplan'].resolution, 300.0*sm['floorplan'].resolution)
@@ -202,11 +203,12 @@ def callback(msg):
     print ("current heading milestone", milestone)
     node = G.nodes[milestone]
     if node['floorplanId'] != "outdoor":
+      last_floorplan = node['floorplanId']
       pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
       # pos is already in real world, no need to multiply resolution. so pass 1.0 here.
       radius = dist(pos, (pose.x, pose.y), 1.0)
-      print (f"distance to milestone {radius} m")
-      
+      print (f"floorplan {node['floorplanId']} distance to {milestone} {radius} m")
+
       # info_dat.info = {
       #   "msg" : f'current heading milestone {milestone}. distance to milestone {radius} m',
       #   "path" : f"Remaining milestones to go: {'-->'.join(path[1:])}"
@@ -227,11 +229,24 @@ def callback(msg):
         milestone = path[1]
         handle_milestone(G, milestone)
         node = G.nodes[milestone]
+
+        # update transit if change map
+        if last_floorplan != node["floorplanId"]:
+          if node['floorplanId'] != "outdoor":
+            pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
+            if node['floorplanId'] == "as6_l1":
+              # skew of stairs
+              publish_initial_position(pos[0], pos[1], yaw+0.261799)
+            else:
+              publish_initial_position(pos[0], pos[1], yaw)
+          milestone = path[2]
+          handle_milestone(G, milestone)
+          node = G.nodes[milestone]
         # update reset exit
         state_msg = messaging.new_message("state")
         state_msg.state=node
         pm.send("state", state_msg)
-        draw(G, path)
+        # draw(G, path)
       # pm.send("info", info_dat)
     else:
       # delegate to GPS module
@@ -302,7 +317,7 @@ def floorplan_thread():
         pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
         # initial calibration offset.
         publish_initial_position(pos[0], pos[1], pi/2+0.04)
-      draw(G, path)
+      # draw(G, path)
     # if sm.updated['state']:
     #   draw(G, path)
 
@@ -343,11 +358,11 @@ def update_gps_dat(lat, lon, alt, ts):
 #   pm.send('liveLocationKalman', dat)
 #   dat.clear_write_flag()
 
-# class RepeatTimer(threading.Timer):  
-#   def run(self):  
-#     while not self.finished.wait(self.interval):  
-#       self.function(*self.args,**self.kwargs)  
-#       print(' ')  
+# class RepeatTimer(threading.Timer):
+#   def run(self):
+#     while not self.finished.wait(self.interval):
+#       self.function(*self.args,**self.kwargs)
+#       print(' ')
 
 def bridge_gps(msg):
   # global gps_dat
@@ -375,11 +390,11 @@ def main():
   sub = rospy.Subscriber('/pose_estimation', PoseWithCovarianceStamped, callback)
   pub_initial = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=10)
   pub_goal = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
-  rospy.Subscriber("/mavros/global_position/raw/fix", NavSatFix, bridge_gps)
+  #rospy.Subscriber("/mavros/global_position/raw/fix", NavSatFix, bridge_gps)
 
-  # timer = RepeatTimer(0.1,send_once,[pm])  
-  # timer.start() #recalling run 
-  # print('Threading started') 
+  # timer = RepeatTimer(0.1,send_once,[pm])
+  # timer.start() #recalling run
+  # print('Threading started')
 
   # floorplan thread
   t1 = threading.Thread(target=floorplan_thread)

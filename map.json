@@ -1,4 +1,5 @@
-[{
+[
+{
     "name": "COM1_L1.png",
     "id": "com1_l1",
     "width": 997,
@@ -32,7 +33,7 @@
             "margin": 20,
             "position": {
                 "x": 345,
-                "y": 55
+                "y": 36
             },
             "connection": "com1_l2_stair5"
         },
@@ -89,7 +90,7 @@
             "margin": 20,
             "position": {
                 "x": 320,
-                "y": 76
+                "y": 65
             },
             "connection": "com1_l1_stair5"
         },
@@ -101,7 +102,7 @@
                 "x": 71,
                 "y": 124
             },
-            "connection": "com1_l2_outdoor"
+            "connection": "as6_entry"
         },
         {
             "id": "com1_l2_foyer",
@@ -122,15 +123,45 @@
                 "y": 300
             },
             "connection": "None"
+        }
+    ]
+},
+{
+    "name": "AS6_L1.png",
+    "id": "as6_l1",
+    "width": 977,
+    "height": 680,
+    "resolution": 0.12,
+    "floor": 1,
+    "exits": [{
+            "id": "as6_entry",
+            "type": "indoor",
+            "margin": 20,
+            "position":{
+                "x": 860,
+                "y": 6
+            },
+            "connection": "com1_l2_linkway"
         },
         {
-            "id": "com1_l2_outdoor",
+            "id": "as6_clb",
+            "type": "indoor",
+            "margin": 20,
+            "position":{
+                "x": 100,
+                "y": 187
+            },
+            "connection": "clb_outdoor"
+        },
+        {
+            "id": "clb_outdoor",
             "type": "outdoor",
             "margin": 20,
             "gps": {
-                "latitude": 1.2953665728338317, 
-                "longitude": 103.77351743959628
+                "latitude": 1.296268883770523, 
+                "longitude": 103.77317254694111
             }
         }
     ]
-}]
+}
+]
