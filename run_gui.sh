@@ -6,4 +6,4 @@ cd deploy/bin/
 ./_navd &
 
 cd ../..
-./dist_x86_64/client/client
+python client.py
