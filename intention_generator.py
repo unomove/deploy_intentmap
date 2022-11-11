@@ -258,14 +258,11 @@ class Planner(object):
         # print ("cb_pose")
         self.robot.updatePosition(pose(msg.pose))
 
-        # replan
-        path = self.robot.makePlan()
-        if path is not None:
-            if len(path.plan.poses) > 2:
-                self.post_process(path)
-
         if self.status != Planner.STATUS["invalid"]:
             self.track_rdp()
+        else:
+            # replan
+            self.replan()
 
     def handle_orientation(self, dir2):
         k = tf_conversions.fromMsg(self.robot.position)
@@ -292,7 +289,10 @@ class Planner(object):
 
     def track_rdp(self):
         cur_pose = array([self.robot.position.position.x, self.robot.position.position.y])
-        print ('simplifid', self.simplified)
+        if self.simplified.shape[0] <= 2:
+            self.pub_intention.publish(Planner.INTENTIONS[Planner.INTENTIONS_IDX[Planner.FORWARD]])
+            return
+        print ('simplifid', self.simplified, self.simplified.shape)
         print ('curpose', cur_pose)
         diff = self.simplified-cur_pose
         dist = np.linalg.norm(diff, axis=1)
@@ -374,15 +374,17 @@ class Planner(object):
     def cb_change_goal(self, msg):
         print ("call back goal")
         self.robot.updateAssignedGoal(pose(msg.pose))
-        path = self.robot.makePlan()
-        # print ("path", path)
-        self.post_process(path)
+        self.status = Planner.STATUS['invalid']
 
-    def post_process(self, path):
-        simplified = self.path_to_rdp(path)
-        self.vis.publish(self.marker_strip(simplified))
-        self.robot.updateAssignedPosition(self.robot.position)
-        self.status=Planner.STATUS["start"]
+    def replan(self):
+        path = self.robot.makePlan()
+        self.status=Planner.STATUS["invalid"]
+        if path is not None:
+            if len(path.plan.poses) > 2:
+                simplified = self.path_to_rdp(path)
+                self.vis.publish(self.marker_strip(simplified))
+                self.robot.updateAssignedPosition(self.robot.position)
+                self.status=Planner.STATUS["start"]
 
     def marker_strip(self, pts):
         marker = Marker()
@@ -426,5 +428,5 @@ def debug():
     rospy.spin()
 
 if __name__ == "__main__":
-    # fire.Fire(main)
-    debug()
+    fire.Fire(main)
+    # debug()
