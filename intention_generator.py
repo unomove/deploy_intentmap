@@ -8,10 +8,11 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Point
 from numpy import array
 import numpy as np
 from visualization_msgs.msg import Marker, MarkerArray
-import tf2_ros
-import tf2_geometry_msgs #import the packages first
+#import tf2_ros
+#import tf2_geometry_msgs #import the packages first
 import rdp
 import tf_conversions
+from tf.transformations import euler_from_quaternion
 from std_msgs.msg import String
 import fire
 
@@ -54,6 +55,7 @@ class Robot(object):
     goal = MoveBaseGoal()
     start = PoseStamped()
     end = PoseStamped()
+    position = None
 
     def __init__(self, name="gazebo", with_move_base=False):
         self.name=name
@@ -170,7 +172,6 @@ class Planner(object):
             pts = pose(p)
             points.append([pts.position.x, pts.position.y])
         simplified = np.array(rdp.rdp(points, Planner.tolerance))
-        # print (simplified.shape)
         intention = self.simplified_to_intentions(simplified)
         self.marker_text(simplified, intention)
         return simplified
@@ -191,6 +192,7 @@ class Planner(object):
     def marker_text(self, simplified, intentions):
         marker_array = MarkerArray()
         pts = []
+        idx = 0
         for idx, intent in enumerate(intentions):
             marker = Marker()
             marker.header.frame_id = "map"
@@ -268,6 +270,9 @@ class Planner(object):
     def handle_orientation(self, dir2):
         k = tf_conversions.fromMsg(self.robot.position)
         r, p, y = k.M.GetRPY()
+        #quat = self.robot.position.orientation
+        #r, p, y = euler_from_quaternion([quat.x, quat.y, quat.z, quat.w], axes='sxyz')
+
         dir1 = array([np.cos(y), np.sin(y)])
         # print ('dir1', dir1)
         # print ('dir2', dir2)
@@ -287,6 +292,8 @@ class Planner(object):
 
     def track_rdp(self):
         cur_pose = array([self.robot.position.position.x, self.robot.position.position.y])
+        print ('simplifid', self.simplified)
+        print ('curpose', cur_pose)
         diff = self.simplified-cur_pose
         dist = np.linalg.norm(diff, axis=1)
         idx = np.argmin(dist)
@@ -368,6 +375,7 @@ class Planner(object):
         print ("call back goal")
         self.robot.updateAssignedGoal(pose(msg.pose))
         path = self.robot.makePlan()
+        # print ("path", path)
         self.post_process(path)
 
     def post_process(self, path):
@@ -418,4 +426,5 @@ def debug():
     rospy.spin()
 
 if __name__ == "__main__":
-    fire.Fire(main)
+    # fire.Fire(main)
+    debug()
