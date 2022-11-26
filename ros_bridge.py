@@ -216,13 +216,12 @@ def callback(msg):
       # }
       # info_dat.info.msg = f'current heading milestone {milestone}. distance to milestone {radius} m'
       print (f"resolution: {floorplan['resolution']}")
-
+      if len(checkpoints) > 0 and milestone == checkpoints[0]:
+        checkpoints=checkpoints[1:]
       if radius < node['margin']*floorplan['resolution']:
         # change state
         # path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
         # update checkpoints
-        if len(checkpoints) > 0 and milestone == checkpoints[0]:
-          checkpoints=checkpoints[1:]
         path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
         # info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
         print(f"Remaining milestones to go: {'-->'.join(path[1:])}")

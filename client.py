@@ -141,17 +141,17 @@ def main():
 
         print (f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m")
         print ("checkpoints", checkpoints)
+        if len(checkpoints) > 0 and milestone == checkpoints[0]:
+            checkpoints=checkpoints[1:]
         if radius < node['margin']*floorplan['resolution']:
-          last_floorplan = node['floorplanId']
+          # last_floorplan = node['floorplanId']
           # change state
           # path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
+          path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
+          info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path)}"
           milestone = path[1]
           handle_milestone(G, milestone)
           path=path[1:]
-          if len(checkpoints) > 0 and milestone == checkpoints[0]:
-            checkpoints=checkpoints[1:]
-          path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
-          info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path)}"
           # draw(G, path)
 
     if sm_remote.updated["state"]:
@@ -164,7 +164,7 @@ def main():
         print ("new floorplan", floorplan_msg)
         print (f"resolution: {floorplans[current_floorplan_id]['resolution']}")
         # update milestone
-        while node['floorplanId'] != current_floorplan_id:
+        if node['floorplanId'] != current_floorplan_id:
           milestone = path[1]
           handle_milestone(G, milestone)
           node = G.nodes[milestone]

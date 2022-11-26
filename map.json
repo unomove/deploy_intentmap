@@ -20,7 +20,7 @@
         {
             "id": "com1_l1_tocom2",
             "type": "linkway",
-            "margin": 20,
+            "margin": 40,
             "position": {
                 "x": 986,
                 "y": 224
@@ -87,7 +87,7 @@
         {
             "id": "com1_l2_stair5",
             "type": "stairs",
-            "margin": 20,
+            "margin": 40,
             "position": {
                 "x": 320,
                 "y": 65
@@ -156,7 +156,7 @@
         {
             "id": "as6_outdoor",
             "type": "linkway",
-            "margin": 20,
+            "margin": 40,
             "position":{
                 "x": 767,
                 "y": 200
@@ -179,15 +179,15 @@
     "id": "com3",
     "width": 1286,
     "height": 1086,
-    "resolution": 0.15,
+    "resolution": 0.12,
     "floor": 1,
     "exits": [{
             "id": "com3_entry",
             "type": "linkway",
-            "margin": 20,
+            "margin": 40,
             "position":{
-                "x": 376,
-                "y": 412
+                "x": 300,
+                "y": 353
             },
             "connection": "com1_l1_tocom2"
         },

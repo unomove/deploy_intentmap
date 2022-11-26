@@ -117,7 +117,7 @@ class Robot(object):
         print ("position: ", self.position)
 
 class Planner(object):
-    min_angle = np.pi * 0.18
+    min_angle = np.pi * 0.15
     # rdp tolerance
     tolerance = 0.8
     INPLACE_LEFT='inplace_left'
@@ -127,6 +127,7 @@ class Planner(object):
     STOP='stop'
     LEFT='left'
     RIGHT='right'
+    RADIUS=4 # meter
     INTENTIONS=[
         FORWARD,
         LEFT,
@@ -298,6 +299,43 @@ class Planner(object):
         diff = self.simplified-cur_pose
         dist = np.linalg.norm(diff, axis=1)
         idx = np.argmin(dist)
+        print  ("dist", dist[idx])
+        if dist[idx] > self.RADIUS:
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = rospy.Time.now()
+            marker.type = Marker.LINE_STRIP
+            marker.scale.x = 0.8
+            marker.scale.y = 1
+            marker.color.a = 1
+            marker.color.r = 1
+            marker.color.g = 0.1
+            marker.color.b = 0.1
+            p = Point()
+            p.x = self.robot.position.position.x
+            p.y = self.robot.position.position.y
+            marker.points.append(p)
+
+            p = Point()
+            p.x = self.simplified[idx][0]
+            p.y = self.simplified[idx][1]
+            marker.points.append(p)
+            self.vis_tracker.publish(marker)
+            self.pub_intention.publish(Planner.INTENTIONS[Planner.INTENTIONS_IDX[Planner.FORWARD]])
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.type = Marker.TEXT_VIEW_FACING
+            marker.scale.z = 8
+            marker.scale.x = 1.7
+            marker.scale.y = 1
+            marker.color.a = 1
+            marker.color.r = 0.1
+            marker.color.g = 1
+            marker.color.b = 0.1
+            marker.pose = self.robot.position
+            marker.text = self.FORWARD
+            self.vis_current.publish(marker)
+            return
 
         marker = Marker()
         marker.header.frame_id = "map"
@@ -359,8 +397,8 @@ class Planner(object):
         marker = Marker()
         marker.header.frame_id = "map"
         marker.type = Marker.TEXT_VIEW_FACING
-        marker.scale.z = 2
-        marker.scale.x = 0.7
+        marker.scale.z = 8
+        marker.scale.x = 1.7
         marker.scale.y = 1
         marker.color.a = 1
         marker.color.r = 0.1
