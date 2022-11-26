@@ -19,6 +19,7 @@ os.environ["ZMQ"] = "1"
 messaging.context = messaging.Context()
 config = json.load(open("config.json"))
 ADDR=config['client']
+checkpoints=config['checkpoints']
 print (f"Client ADDR {ADDR}")
 
 # # ros topics
@@ -32,7 +33,7 @@ ASSEST="assets/floorplans"
 # from astar.utils import plot_path
 
 # import map graph
-from lib.graph import load_graph, add_source_target, draw, dist, uv_to_position, smexit_to_dict
+from lib.graph import load_graph, add_source_target, draw, dist, uv_to_position, smexit_to_dict, plan_with_checkpoints
 import networkx as nx
 import json
 
@@ -186,7 +187,7 @@ def handle_milestone(G, milestone):
     # Params().put("NavDestination", json.dumps(dest))
 
 def callback(msg):
-    global pose, pm, milestone, G, path
+    global pose, pm, milestone, G, path, checkpoints
     pose = msg.pose.pose.position
     quat = msg.pose.pose.orientation
     yaw = euler_from_quaternion(quat.x, quat.y, quat.z, quat.w)
@@ -218,7 +219,11 @@ def callback(msg):
 
       if radius < node['margin']*floorplan['resolution']:
         # change state
-        path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
+        # path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
+        # update checkpoints
+        if len(checkpoints) > 0 and milestone == checkpoints[0]:
+          checkpoints=checkpoints[1:]
+        path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
         # info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
         print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
         # new path generated
@@ -237,6 +242,10 @@ def callback(msg):
             if node['floorplanId'] == "as6_l1":
               # skew of stairs
               publish_initial_position(pos[0], pos[1], yaw+0.261799)
+            elif node['floorplanId'] == "com3":
+              publish_initial_position(pos[0], pos[1], yaw-1.29861)
+            elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
+              publish_initial_position(pos[0], pos[1], yaw-0.24299)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
           milestone = path[2]
@@ -306,7 +315,8 @@ def floorplan_thread():
       # print ("target", target)
       # # add new source and target
       add_source_target(G, source, target)
-      path = nx.shortest_path(G, source=source['id'], target=target['id'], weight='weight') # this path is the shortest transit in map graph
+      # path = nx.shortest_path(G, source=source['id'], target=target['id'], weight='weight') # this path is the shortest transit in map graph
+      path = plan_with_checkpoints(G, source['id'], target['id'], checkpoints)
       print ("Subgoal milestones to go: ", path[1:])
       # info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
       milestone = path[1]

@@ -15,6 +15,7 @@ import tf_conversions
 from tf.transformations import euler_from_quaternion
 from std_msgs.msg import String
 import fire
+import time
 
 # define functions 
 def pose(m):
@@ -373,6 +374,9 @@ class Planner(object):
 
     def cb_change_goal(self, msg):
         print ("call back goal")
+        # delay 2 seconds to wait for synchronization
+        time.sleep(2)
+
         self.robot.updateAssignedGoal(pose(msg.pose))
         self.status = Planner.STATUS['invalid']
 
@@ -380,7 +384,7 @@ class Planner(object):
         path = self.robot.makePlan()
         self.status=Planner.STATUS["invalid"]
         if path is not None:
-            if len(path.plan.poses) > 2:
+            if len(path.plan.poses) > 4:
                 simplified = self.path_to_rdp(path)
                 self.vis.publish(self.marker_strip(simplified))
                 self.robot.updateAssignedPosition(self.robot.position)

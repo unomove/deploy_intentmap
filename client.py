@@ -4,7 +4,7 @@ import time
 import json
 import os
 import networkx as nx
-from lib.graph import load_graph, add_source_target, dist, uv_to_position, smexit_to_dict, draw
+from lib.graph import load_graph, add_source_target, dist, uv_to_position, smexit_to_dict, draw, plan_with_checkpoints
 from lib.params import Params # used for Params write for mapbox GUI
 from easydict import EasyDict as edict
 os.environ["ZMQ"] = "1"
@@ -19,6 +19,7 @@ print (f"Server ADDR {HOST}")
 # # alpha version, will input the source and target in GUI later.
 source=config['source']
 target=config['target']
+checkpoints=config["checkpoints"]
 # source = {
 #   "id": "source",
 #   "floorplanId": "com1_l1",
@@ -113,7 +114,8 @@ def handle_milestone(G, milestone):
     Params().put("NavDestination", json.dumps(dest))
 
 milestone='source' 
-path = nx.shortest_path(G, source=source['id'], target=target['id'], weight='weight') 
+# path = nx.shortest_path(G, source=source['id'], target=target['id'], weight='weight') 
+path = plan_with_checkpoints(G, source['id'], target['id'], checkpoints)
 # draw(G, path)
 milestone = path[1]
 print ("milestone", milestone)
@@ -121,7 +123,7 @@ handle_milestone(G, milestone)
 
 def main():
   while 1:
-    global path, milestone, current_floorplan_id
+    global path, milestone, current_floorplan_id, checkpoints
     sm.update()
     sm_remote.update()
     info_dat = messaging.new_message('info')
@@ -134,17 +136,22 @@ def main():
         radius = dist(pos, (sm_remote['pose'].x, sm_remote['pose'].y), 1.0)
         info_dat.info = {
           "msg" : f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m",
-          "path" : f"Remaining milestones to go: {'-->'.join(path[1:])}"
+          "path" : f"Remaining milestones to go: {'-->'.join(path)}"
         }
 
         print (f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m")
+        print ("checkpoints", checkpoints)
         if radius < node['margin']*floorplan['resolution']:
           last_floorplan = node['floorplanId']
           # change state
-          path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
-          info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
+          # path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
           milestone = path[1]
           handle_milestone(G, milestone)
+          path=path[1:]
+          if len(checkpoints) > 0 and milestone == checkpoints[0]:
+            checkpoints=checkpoints[1:]
+          path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
+          info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path)}"
           # draw(G, path)
 
     if sm_remote.updated["state"]:

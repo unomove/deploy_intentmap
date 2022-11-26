@@ -1,6 +1,6 @@
 {
-  "server":"192.168.80.101",
-  "client":"192.168.80.102",
+  "server":"127.0.0.1",
+  "client":"127.0.0.1",
   "source":{
     "id": "source",
     "floorplanId": "com1_l1",
@@ -18,17 +18,23 @@
   },
   "target":{
     "id": "target",
-    "type": "outdoor",
-    "floorplanId": "outdoor",
+    "floorplanId": "com3",
+    "type": "indoor",
     "margin": 20,
     "position": {
-      "x": 0,
-      "y": 0
+        "x": 840,
+        "y": 490
     },
     "gps": {
-      "latitude" : 1.296268883770523,
-      "longitude": 103.77317254694111
+      "latitude" : 0,
+      "longitude": 0
     },
     "connection":""
-  }
+  },
+  "checkpoints": [
+    "com1_l2_linkway",
+    "as6_clb",
+    "com3_entry",
+    "com3_sr11"
+  ]
 }

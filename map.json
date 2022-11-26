@@ -42,8 +42,8 @@
             "type": "linkway",
             "margin": 20,
             "position": {
-                "x": 70,
-                "y": 88
+                "x": 1,
+                "y": 72
             },
             "connection": "com1_l1_outdoor"
         },
@@ -130,7 +130,7 @@
     "name": "AS6_L1.png",
     "id": "as6_l1",
     "width": 977,
-    "height": 680,
+    "height": 880,
     "resolution": 0.12,
     "floor": 1,
     "exits": [{
@@ -139,7 +139,7 @@
             "margin": 20,
             "position":{
                 "x": 860,
-                "y": 6
+                "y": 206
             },
             "connection": "com1_l2_linkway"
         },
@@ -149,9 +149,19 @@
             "margin": 20,
             "position":{
                 "x": 100,
-                "y": 187
+                "y": 387
             },
             "connection": "clb_outdoor"
+        },
+        {
+            "id": "as6_outdoor",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 767,
+                "y": 200
+            },
+            "connection": "com1_l1_linkway"
         },
         {
             "id": "clb_outdoor",
@@ -161,6 +171,65 @@
                 "latitude": 1.296268883770523, 
                 "longitude": 103.77317254694111
             }
+        }
+    ]
+},
+{
+    "name": "COM3.png",
+    "id": "com3",
+    "width": 1286,
+    "height": 1086,
+    "resolution": 0.15,
+    "floor": 1,
+    "exits": [{
+            "id": "com3_entry",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 376,
+                "y": 412
+            },
+            "connection": "com1_l1_tocom2"
+        },
+        {
+            "id": "com3_icecream",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 529,
+                "y": 529
+            },
+            "connection": "com3_entry"
+        },
+        {
+            "id": "com3_AHU",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 582,
+                "y": 307
+            },
+            "connection": "com3_icecream"
+        },
+        {
+            "id": "com3_sr11",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 714,
+                "y": 147
+            },
+            "connection": "com3_AHU"
+        },
+        {
+            "id": "com3_mid",
+            "type": "linkway",
+            "margin": 20,
+            "position":{
+                "x": 838,
+                "y": 433
+            },
+            "connection": "com3_sr11"
         }
     ]
 }

@@ -1,5 +1,5 @@
 <launch>
-  <arg name="basedir" value="/mnt/deploy_intentmap/roslaunch" />
+  <arg name="basedir" value="/home/gaowei/deploy_intentmap/roslaunch" />
   <rosparam command="load" file="$(arg basedir)/image_to_gridmap_demo.yaml" />
 
   
