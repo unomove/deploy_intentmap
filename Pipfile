@@ -57,7 +57,6 @@ libusb1 = "*"
 nose = "*"
 numpy = "*"
 onnx = "*"
-onnxruntime-gpu = {version = "*", markers="platform_system != 'Darwin'"}
 pillow = "*"
 psutil = "*"
 pycapnp = "==1.1.0"
