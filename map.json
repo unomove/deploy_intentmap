@@ -33,7 +33,7 @@
             "margin": 20,
             "position": {
                 "x": 345,
-                "y": 36
+                "y": 20
             },
             "connection": "com1_l2_stair5"
         },
@@ -42,7 +42,7 @@
             "type": "linkway",
             "margin": 20,
             "position": {
-                "x": 1,
+                "x": 0,
                 "y": 72
             },
             "connection": "com1_l1_outdoor"
@@ -87,10 +87,10 @@
         {
             "id": "com1_l2_stair5",
             "type": "stairs",
-            "margin": 40,
+            "margin": 30,
             "position": {
                 "x": 320,
-                "y": 65
+                "y": 50
             },
             "connection": "com1_l1_stair5"
         },
@@ -146,19 +146,19 @@
         {
             "id": "as6_clb",
             "type": "indoor",
-            "margin": 20,
+            "margin": 60,
             "position":{
-                "x": 100,
-                "y": 387
+                "x": 480,
+                "y": 440
             },
             "connection": "clb_outdoor"
         },
         {
             "id": "as6_outdoor",
-            "type": "linkway",
-            "margin": 40,
+            "type": "indoor",
+            "margin": 60,
             "position":{
-                "x": 767,
+                "x": 795,
                 "y": 200
             },
             "connection": "com1_l1_linkway"

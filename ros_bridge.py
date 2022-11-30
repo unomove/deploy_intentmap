@@ -227,8 +227,10 @@ def callback(msg):
         print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
         # new path generated
         if node['floorplanId'] != "outdoor":
-          pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
-          publish_initial_position(pos[0], pos[1], yaw)
+          # pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
+          # publish_initial_position(pos[0], pos[1], yaw)
+          # in the same floorplan, we don't jump positions
+          publish_initial_position(pose.x, pose.y, yaw)
 
         milestone = path[1]
         handle_milestone(G, milestone)
@@ -244,7 +246,8 @@ def callback(msg):
             elif node['floorplanId'] == "com3":
               publish_initial_position(pos[0], pos[1], yaw-1.29861)
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
-              publish_initial_position(pos[0], pos[1], yaw-0.24299)
+              # publish_initial_position(pos[0], pos[1], yaw-0.24299)
+              publish_initial_position(pos[0], pos[1], yaw-0.261799)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
           milestone = path[2]
@@ -318,14 +321,16 @@ def floorplan_thread():
       path = plan_with_checkpoints(G, source['id'], target['id'], checkpoints)
       print ("Subgoal milestones to go: ", path[1:])
       # info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
-      milestone = path[1]
-      handle_milestone(G, milestone)
+
       # publish initial pose from source
       node = G.nodes["source"]
       if node['floorplanId'] != "outdoor":
         pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
         # initial calibration offset.
         publish_initial_position(pos[0], pos[1], pi/2+0.04)
+
+      milestone = path[1]
+      handle_milestone(G, milestone)
       # draw(G, path)
     # if sm.updated['state']:
     #   draw(G, path)
