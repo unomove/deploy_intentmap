@@ -216,6 +216,7 @@ def callback(msg):
       # }
       # info_dat.info.msg = f'current heading milestone {milestone}. distance to milestone {radius} m'
       print (f"resolution: {floorplan['resolution']}")
+      print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
       if len(checkpoints) > 0 and milestone == checkpoints[0]:
         checkpoints=checkpoints[1:]
       if radius < node['margin']*floorplan['resolution']:
@@ -247,12 +248,13 @@ def callback(msg):
               publish_initial_position(pos[0], pos[1], yaw-1.29861)
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
               # publish_initial_position(pos[0], pos[1], yaw-0.24299)
-              publish_initial_position(pos[0], pos[1], yaw-0.261799)
+              publish_initial_position(pos[0], pos[1], yaw-0.271799)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
-          milestone = path[2]
+          milestone = path[1]
           handle_milestone(G, milestone)
           node = G.nodes[milestone]
+          path = path[1:]
         # update reset exit
         state_msg = messaging.new_message("state")
         state_msg.state=node
@@ -301,7 +303,7 @@ def floorplan_thread():
       rosimage.data = img.tobytes()
       rosimage.header.stamp = rospy.Time.now()
       rosimage.header.frame_id = 'map'
-      print ("publish floorplan image")
+      print (f"publish floorplan image from {os.path.join(ASSEST, sm['floorplan'].name)}")
       publisher.publish(rosimage)
     if sm.updated['source'] and sm.updated['target']:
       # check nodes

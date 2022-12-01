@@ -78,8 +78,6 @@ Visualization Manager:
       Namespaces:
         idx0: true
         idx1: true
-        idx10: true
-        idx11: true
         idx2: true
         idx3: true
         idx4: true
@@ -90,7 +88,6 @@ Visualization Manager:
         idx9: true
         text0: true
         text1: true
-        text10: true
         text2: true
         text3: true
         text4: true
@@ -98,7 +95,6 @@ Visualization Manager:
         text6: true
         text7: true
         text8: true
-        text9: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -190,7 +186,7 @@ Visualization Manager:
           Value: true
         Value: false
       Enabled: true
-      Keep: 500
+      Keep: 1000
       Name: Odometry
       Position Tolerance: 0.10000000149011612
       Queue Size: 10
@@ -235,7 +231,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 101.64510345458984
+      Distance: 179.13339233398438
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

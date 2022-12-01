@@ -2,8 +2,8 @@
 {
     "name": "COM1_L1.png",
     "id": "com1_l1",
-    "width": 997,
-    "height": 580,
+    "width": 998,
+    "height": 579,
     "resolution": 0.12,
     "floor": 1,
     "exits" : [
@@ -32,7 +32,7 @@
             "type": "stairs",
             "margin": 20,
             "position": {
-                "x": 345,
+                "x": 330,
                 "y": 20
             },
             "connection": "com1_l2_stair5"
@@ -42,8 +42,8 @@
             "type": "linkway",
             "margin": 20,
             "position": {
-                "x": 0,
-                "y": 72
+                "x": 50,
+                "y": 80
             },
             "connection": "com1_l1_outdoor"
         },
@@ -89,8 +89,8 @@
             "type": "stairs",
             "margin": 30,
             "position": {
-                "x": 320,
-                "y": 50
+                "x": 310,
+                "y": 40
             },
             "connection": "com1_l1_stair5"
         },
@@ -148,8 +148,8 @@
             "type": "indoor",
             "margin": 60,
             "position":{
-                "x": 480,
-                "y": 440
+                "x": 87,
+                "y": 410
             },
             "connection": "clb_outdoor"
         },
@@ -158,7 +158,7 @@
             "type": "indoor",
             "margin": 60,
             "position":{
-                "x": 795,
+                "x": 840,
                 "y": 200
             },
             "connection": "com1_l1_linkway"

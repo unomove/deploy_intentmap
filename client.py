@@ -152,6 +152,8 @@ def main():
           milestone = path[1]
           handle_milestone(G, milestone)
           path=path[1:]
+          if len(checkpoints) > 0 and milestone == checkpoints[0]:
+            checkpoints=checkpoints[1:]
           # draw(G, path)
 
     if sm_remote.updated["state"]:
@@ -165,10 +167,12 @@ def main():
         print (f"resolution: {floorplans[current_floorplan_id]['resolution']}")
         # update milestone
         if node['floorplanId'] != current_floorplan_id:
-          milestone = path[1]
+          milestone = path[2]
           handle_milestone(G, milestone)
           node = G.nodes[milestone]
-          path = path[1:]
+          path = path[2:]
+          if len(checkpoints) > 0 and milestone == checkpoints[0]:
+            checkpoints=checkpoints[1:]
         pm.send("floorplan", floorplan_msg)
     if sm_remote.updated['liveLocationKalman']:
       print (sm_remote['liveLocationKalman'])

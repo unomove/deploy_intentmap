@@ -7,7 +7,7 @@
     "type": "indoor",
     "margin": 20,
     "position": {
-      "x": 765,
+      "x": 760,
       "y": 105
     },
     "gps": {
@@ -32,9 +32,11 @@
     "connection":""
   },
   "checkpoints": [
+    "com1_l2_stair5",
     "com1_l2_linkway",
     "as6_clb",
     "as6_outdoor",
+    "com1_l1_linkway",
     "com3_entry",
     "com3_sr11"
   ]
