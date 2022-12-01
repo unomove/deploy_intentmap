@@ -89,7 +89,7 @@
             "type": "stairs",
             "margin": 30,
             "position": {
-                "x": 310,
+                "x": 320,
                 "y": 40
             },
             "connection": "com1_l1_stair5"
