@@ -22,8 +22,8 @@
     "type": "indoor",
     "margin": 20,
     "position": {
-        "x": 840,
-        "y": 490
+        "x": 27,
+        "y": 512
     },
     "gps": {
       "latitude" : 0,
@@ -38,6 +38,9 @@
     "as6_outdoor",
     "com1_l1_linkway",
     "com3_entry",
-    "com3_sr11"
+    "com3_sr11",
+    "com3_sr13",
+    "com3_multipurpose",
+    "com3_canteenback"
   ]
 }

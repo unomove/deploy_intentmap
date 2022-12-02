@@ -216,8 +216,8 @@
             "type": "linkway",
             "margin": 20,
             "position":{
-                "x": 714,
-                "y": 147
+                "x": 769,
+                "y": 175
             },
             "connection": "com3_AHU"
         },
@@ -230,7 +230,37 @@
                 "y": 433
             },
             "connection": "com3_sr11"
-        }
+        },
+	{
+	    "id": "com3_sr13",
+	    "type": "linkway",
+	    "margin": 20,
+	    "position":{
+		  "x": 1132,
+		  "y": 333
+	    },
+	    "connection": "com3_sr11"
+	},
+	{
+	    "id": "com3_multipurpose",
+	    "type": "linkway",
+	    "margin": 20,
+	    "position":{
+		   "x": 972,
+		   "y": 543
+	    },
+	    "connection": "com3_sr13"
+	},
+	{
+	    "id": "com3_canteenback",
+	    "type": "linkway",
+	    "margin": 20,
+	    "position":{
+		    "x": 283,
+		    "y": 871
+	    },
+	    "connection": "com3_multipurpose"
+	}
     ]
 }
 ]
