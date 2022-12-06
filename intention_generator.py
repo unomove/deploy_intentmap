@@ -413,7 +413,7 @@ class Planner(object):
     def cb_change_goal(self, msg):
         print ("call back goal")
         # delay 2 seconds to wait for synchronization
-        time.sleep(1)
+        time.sleep(2)
 
         self.robot.updateAssignedGoal(pose(msg.pose))
         self.status = Planner.STATUS['invalid']

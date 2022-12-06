@@ -61,7 +61,7 @@ floorplans = {}
 for floorplan in json_message:
   floorplans[floorplan['id']] = floorplan
 
-pm = messaging.PubMaster(['pose', 'liveLocationKalman', 'state'])
+pm = messaging.PubMaster(['pose', 'liveLocationKalman', 'state', "info"])
 
 def euler_from_quaternion(x, y, z, w):
   """
@@ -203,6 +203,8 @@ def callback(msg):
     # handle map graph state change
     print ("current heading milestone", milestone)
     node = G.nodes[milestone]
+
+    print ('milestone', milestone, 'node', node)
     if node['floorplanId'] != "outdoor":
       last_floorplan = node['floorplanId']
       pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
@@ -217,6 +219,14 @@ def callback(msg):
       # info_dat.info.msg = f'current heading milestone {milestone}. distance to milestone {radius} m'
       print (f"resolution: {floorplan['resolution']}")
       print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
+
+      info_dat = messaging.new_message('info')
+      info_dat.info = {
+        "msg" : f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m",
+        "path" : f"Remaining milestones to go: {'-->'.join(path)}"
+      }
+      pm.send('info', info_dat)
+
       if len(checkpoints) > 0 and milestone == checkpoints[0]:
         checkpoints=checkpoints[1:]
       if radius < node['margin']*floorplan['resolution']:
@@ -333,9 +343,6 @@ def floorplan_thread():
 
       milestone = path[1]
       handle_milestone(G, milestone)
-      # draw(G, path)
-    # if sm.updated['state']:
-    #   draw(G, path)
 
 # ****************** Test Use ***************** #
 # # in publisher
@@ -369,17 +376,6 @@ def update_gps_dat(lat, lon, alt, ts):
   gps_dat.liveLocationKalman.gpsOK = True
   gps_dat.liveLocationKalman.status = "valid"
 
-# def send_once(pm):
-#   global dat
-#   pm.send('liveLocationKalman', dat)
-#   dat.clear_write_flag()
-
-# class RepeatTimer(threading.Timer):
-#   def run(self):
-#     while not self.finished.wait(self.interval):
-#       self.function(*self.args,**self.kwargs)
-#       print(' ')
-
 def bridge_gps(msg):
   # global gps_dat
   gps_dat = messaging.new_message('liveLocationKalman')
@@ -408,14 +404,9 @@ def main():
   pub_goal = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
   #rospy.Subscriber("/mavros/global_position/raw/fix", NavSatFix, bridge_gps)
 
-  # timer = RepeatTimer(0.1,send_once,[pm])
-  # timer.start() #recalling run
-  # print('Threading started')
-
   # floorplan thread
   t1 = threading.Thread(target=floorplan_thread)
   t1.start()
-  # python_astar()
 
 if __name__ == '__main__':
   main()
