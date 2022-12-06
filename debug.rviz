@@ -6,9 +6,12 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Marker1
         - /MarkerArray1
+        - /Marker2
+        - /Path1
         - /Odometry1
-        - /Odometry1/Status1
+        - /Odometry1/Shape1
       Splitter Ratio: 0.5
     Tree Height: 1079
   - Class: rviz/Selection
@@ -69,7 +72,7 @@ Visualization Manager:
       Marker Topic: /vis_tracker
       Name: Marker
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -77,25 +80,7 @@ Visualization Manager:
       Marker Topic: /vis_intention
       Name: MarkerArray
       Namespaces:
-        idx0: true
-        idx1: true
-        idx2: true
-        idx3: true
-        idx4: true
-        idx5: true
-        idx6: true
-        idx7: true
-        idx8: true
-        idx9: true
-        text0: true
-        text1: true
-        text2: true
-        text3: true
-        text4: true
-        text5: true
-        text6: true
-        text7: true
-        text8: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -103,7 +88,7 @@ Visualization Manager:
       Marker Topic: /vis_current
       Name: Marker
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -111,7 +96,7 @@ Visualization Manager:
       Marker Topic: /vis
       Name: Marker
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -130,7 +115,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Pose Color: 255; 85; 255
-      Pose Style: None
+      Pose Style: Axes
       Queue Size: 10
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
@@ -142,7 +127,7 @@ Visualization Manager:
       Axes Length: 1
       Axes Radius: 0.10000000149011612
       Class: rviz/PoseWithCovariance
-      Color: 252; 175; 62
+      Color: 25; 255; 0
       Covariance:
         Orientation:
           Alpha: 0.5
@@ -159,12 +144,12 @@ Visualization Manager:
           Value: true
         Value: true
       Enabled: true
-      Head Length: 0.8999999761581421
-      Head Radius: 0.8999999761581421
+      Head Length: 1
+      Head Radius: 3
       Name: PoseWithCovariance
       Queue Size: 10
       Shaft Length: 1
-      Shaft Radius: 0.5
+      Shaft Radius: 3
       Shape: Arrow
       Topic: /pose_estimation
       Unreliable: false
@@ -187,7 +172,7 @@ Visualization Manager:
           Value: true
         Value: false
       Enabled: true
-      Keep: 100
+      Keep: 10000
       Name: Odometry
       Position Tolerance: 0.10000000149011612
       Queue Size: 10
@@ -196,10 +181,10 @@ Visualization Manager:
         Axes Length: 1
         Axes Radius: 0.10000000149011612
         Color: 255; 25; 0
-        Head Length: 0.30000001192092896
-        Head Radius: 0.10000000149011612
-        Shaft Length: 1
-        Shaft Radius: 0.05000000074505806
+        Head Length: 1
+        Head Radius: 1
+        Shaft Length: 0.009999999776482582
+        Shaft Radius: 1
         Value: Arrow
       Topic: /spot_odom
       Unreliable: false
@@ -232,7 +217,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 167.13734436035156
+      Distance: 101.42082214355469
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -240,9 +225,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 5.391848087310791
-        Y: -4.230882167816162
-        Z: 0.4770168364048004
+        X: -0.12308663874864578
+        Y: -8.162710189819336
+        Z: 0.47150614857673645
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

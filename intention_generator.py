@@ -200,7 +200,7 @@ class Planner(object):
             marker.header.frame_id = "map"
             marker.type = Marker.TEXT_VIEW_FACING
             marker.ns = "text"+str(idx)
-            marker.scale.z = 1
+            marker.scale.z = 2
             marker.scale.x = 0.7
             marker.scale.y = 1
             marker.color.a = 1
@@ -217,9 +217,9 @@ class Planner(object):
             marker.header.frame_id = "map"
             marker.type = Marker.SPHERE
             marker.ns = "idx"+str(idx)
-            marker.scale.z = 0.5
-            marker.scale.x = 0.5
-            marker.scale.y = 0.5
+            marker.scale.z = 1
+            marker.scale.x = 1
+            marker.scale.y = 1
             marker.color.a = 1
             marker.color.r = 0.1
             marker.color.g = 0.1
@@ -237,9 +237,9 @@ class Planner(object):
         marker.header.frame_id = "map"
         marker.type = Marker.SPHERE
         marker.ns = "idx"+str(idx)
-        marker.scale.z = 0.5
-        marker.scale.x = 0.5
-        marker.scale.y = 0.5
+        marker.scale.z = 1
+        marker.scale.x = 1
+        marker.scale.y = 1
         marker.color.a = 1
         marker.color.r = 0.1
         marker.color.g = 0.1
@@ -433,8 +433,8 @@ class Planner(object):
         marker.header.frame_id = "map"
         marker.header.stamp = rospy.Time.now()
         marker.type = Marker.POINTS
-        marker.scale.x = 0.4
-        marker.scale.y = 1
+        marker.scale.x = 2
+        marker.scale.y = 2
         marker.color.a = 1
         marker.color.r = 1
         marker.color.g = 0.1

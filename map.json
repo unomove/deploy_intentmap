@@ -186,8 +186,8 @@
             "type": "linkway",
             "margin": 40,
             "position":{
-                "x": 300,
-                "y": 353
+                "x": 310,
+                "y": 363
             },
             "connection": "com1_l1_tocom2"
         },
@@ -234,7 +234,7 @@
 	{
 	    "id": "com3_sr13",
 	    "type": "linkway",
-	    "margin": 20,
+	    "margin": 40,
 	    "position":{
 		  "x": 1132,
 		  "y": 333
@@ -244,17 +244,27 @@
 	{
 	    "id": "com3_multipurpose",
 	    "type": "linkway",
-	    "margin": 20,
+	    "margin": 40,
 	    "position":{
 		   "x": 972,
-		   "y": 543
+		   "y": 514
 	    },
 	    "connection": "com3_sr13"
+	},
+    {
+	    "id": "com3_security",
+	    "type": "linkway",
+	    "margin": 40,
+	    "position":{
+		   "x": 231,
+		   "y": 549
+	    },
+	    "connection": "com3_canteenback"
 	},
 	{
 	    "id": "com3_canteenback",
 	    "type": "linkway",
-	    "margin": 20,
+	    "margin": 40,
 	    "position":{
 		    "x": 283,
 		    "y": 871
