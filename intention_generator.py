@@ -57,6 +57,7 @@ class Robot(object):
     start = PoseStamped()
     end = PoseStamped()
     position = None
+    cnt = 4
 
     def __init__(self, name="gazebo", with_move_base=False):
         self.name=name
@@ -117,7 +118,7 @@ class Robot(object):
         print ("position: ", self.position)
 
 class Planner(object):
-    min_angle = np.pi * 0.15
+    min_angle = np.pi * 0.14
     # rdp tolerance
     tolerance = 0.8
     INPLACE_LEFT='inplace_left'
@@ -127,7 +128,7 @@ class Planner(object):
     STOP='stop'
     LEFT='left'
     RIGHT='right'
-    RADIUS=4.6 # meter
+    RADIUS=5.2 # meter
     INTENTIONS=[
         FORWARD,
         LEFT,
@@ -174,7 +175,10 @@ class Planner(object):
             pts = pose(p)
             points.append([pts.position.x, pts.position.y])
         simplified = np.array(rdp.rdp(points, Planner.tolerance))
+        if len(simplified) == 2:
+            simplified = np.vstack([simplified[0], (simplified[0]+simplified[1])/2, simplified[1]])
         intention = self.simplified_to_intentions(simplified)
+        print ("before maker_text", simplified.shape, intention.shape)
         self.marker_text(simplified, intention)
         return simplified
 
@@ -412,21 +416,23 @@ class Planner(object):
 
     def cb_change_goal(self, msg):
         print ("call back goal")
-        # delay 2 seconds to wait for synchronization
-        time.sleep(2)
-
         self.robot.updateAssignedGoal(pose(msg.pose))
         self.status = Planner.STATUS['invalid']
+        self.robot.cnt = 4
+        time.sleep(1)
 
     def replan(self):
         path = self.robot.makePlan()
         self.status=Planner.STATUS["invalid"]
         if path is not None:
-            if len(path.plan.poses) > 4:
-                simplified = self.path_to_rdp(path)
-                self.vis.publish(self.marker_strip(simplified))
-                self.robot.updateAssignedPosition(self.robot.position)
-                self.status=Planner.STATUS["start"]
+            if len(path.plan.poses) > 10:
+                self.robot.cnt -= 1
+                time.sleep(0.5)
+                if self.robot.cnt <= 0:
+                    simplified = self.path_to_rdp(path)
+                    self.vis.publish(self.marker_strip(simplified))
+                    self.robot.updateAssignedPosition(self.robot.position)
+                    self.status=Planner.STATUS["start"]
 
     def marker_strip(self, pts):
         marker = Marker()

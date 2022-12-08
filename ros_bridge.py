@@ -13,6 +13,7 @@ from pyquaternion import Quaternion
 import cv2
 import time
 import json
+import numpy as np
 
 # using ZMQ, since we will have remote subscriber
 os.environ["ZMQ"] = "1"
@@ -174,6 +175,7 @@ def publish_initial_position(x, y, theta):
 
 def handle_milestone(G, milestone):
   node = G.nodes[milestone]
+  time.sleep(0.3)
   if node['floorplanId'] != "outdoor":
     pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
     publish_goal(pos[0], pos[1], 0)
@@ -223,9 +225,9 @@ def callback(msg):
       info_dat = messaging.new_message('info')
       info_dat.info = {
         "msg" : f"current heading {milestone}. floorplan {node['floorplanId']}, distance to milestone {radius} m",
-        "path" : f"Remaining milestones to go: {'-->'.join(path)}"
+        "path" : f"Remaining milestones to go: {'-->'.join(path[1:])}"
       }
-      pm.send('info', info_dat)
+      
 
       if len(checkpoints) > 0 and milestone == checkpoints[0]:
         checkpoints=checkpoints[1:]
@@ -234,19 +236,13 @@ def callback(msg):
         # path = nx.shortest_path(G, source=milestone, target='target', weight='weight')
         # update checkpoints
         path = plan_with_checkpoints(G, milestone, 'target', checkpoints)
-        # info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
+        info_dat.info.path = f"Remaining milestones to go: {'-->'.join(path[1:])}"
         print(f"Remaining milestones to go: {'-->'.join(path[1:])}")
-        # new path generated
+        # # new path generated
         if node['floorplanId'] != "outdoor":
-          # pos = uv_to_position(floorplans, node['floorplanId'], node['position']['x'], node['position']['y'])
-          # publish_initial_position(pos[0], pos[1], yaw)
-          # in the same floorplan, we don't jump positions
           publish_initial_position(pose.x, pose.y, yaw)
-
         milestone = path[1]
-        handle_milestone(G, milestone)
         node = G.nodes[milestone]
-
         # update transit if change map
         if last_floorplan != node["floorplanId"]:
           if node['floorplanId'] != "outdoor":
@@ -258,18 +254,22 @@ def callback(msg):
               publish_initial_position(pos[0], pos[1], yaw-1.29861)
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
               # publish_initial_position(pos[0], pos[1], yaw-0.24299)
-              publish_initial_position(pos[0], pos[1], yaw-0.271799)
+              # publish_initial_position(pos[0], pos[1], yaw-0.271799)
+              publish_initial_position(pos[0], pos[1], -np.pi/2)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
           milestone = path[1]
           handle_milestone(G, milestone)
           node = G.nodes[milestone]
           path = path[1:]
+        else:
+          handle_milestone(G, milestone)
         # update reset exit
         state_msg = messaging.new_message("state")
         state_msg.state=node
         pm.send("state", state_msg)
         # draw(G, path)
+      pm.send('info', info_dat)
       # pm.send("info", info_dat)
     else:
       # delegate to GPS module

@@ -42,7 +42,7 @@
             "type": "linkway",
             "margin": 20,
             "position": {
-                "x": 50,
+                "x": 150,
                 "y": 80
             },
             "connection": "com1_l1_outdoor"
@@ -90,14 +90,14 @@
             "margin": 30,
             "position": {
                 "x": 320,
-                "y": 40
+                "y": 50
             },
             "connection": "com1_l1_stair5"
         },
         {
             "id": "com1_l2_linkway",
             "type": "linkway",
-            "margin": 20,
+            "margin": 40,
             "position": {
                 "x": 71,
                 "y": 124
@@ -138,7 +138,7 @@
             "type": "indoor",
             "margin": 20,
             "position":{
-                "x": 860,
+                "x": 880,
                 "y": 206
             },
             "connection": "com1_l2_linkway"
@@ -148,8 +148,8 @@
             "type": "indoor",
             "margin": 60,
             "position":{
-                "x": 87,
-                "y": 410
+                "x": 121,
+                "y": 450
             },
             "connection": "clb_outdoor"
         },
@@ -158,8 +158,8 @@
             "type": "indoor",
             "margin": 60,
             "position":{
-                "x": 840,
-                "y": 200
+                "x": 960,
+                "y": 190
             },
             "connection": "com1_l1_linkway"
         },
@@ -244,7 +244,7 @@
 	{
 	    "id": "com3_multipurpose",
 	    "type": "linkway",
-	    "margin": 40,
+	    "margin": 60,
 	    "position":{
 		   "x": 972,
 		   "y": 514
