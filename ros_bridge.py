@@ -250,8 +250,9 @@ def callback(msg):
             if node['floorplanId'] == "as6_l1":
               # skew of stairs
               publish_initial_position(pos[0], pos[1], yaw+0.261799)
+              # publish_initial_position(pos[0], pos[1], np.pi/2+0.261799)
             elif node['floorplanId'] == "com3":
-              publish_initial_position(pos[0], pos[1], yaw-1.29861)
+              publish_initial_position(pos[0], pos[1], -np.pi/2-1.29161)
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
               # publish_initial_position(pos[0], pos[1], yaw-0.24299)
               # publish_initial_position(pos[0], pos[1], yaw-0.271799)

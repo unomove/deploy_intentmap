@@ -417,9 +417,9 @@ class Planner(object):
     def cb_change_goal(self, msg):
         print ("call back goal")
         self.robot.updateAssignedGoal(pose(msg.pose))
+        time.sleep(2)
         self.status = Planner.STATUS['invalid']
-        self.robot.cnt = 4
-        time.sleep(1)
+        self.robot.cnt = 6
 
     def replan(self):
         path = self.robot.makePlan()
@@ -427,7 +427,6 @@ class Planner(object):
         if path is not None:
             if len(path.plan.poses) > 10:
                 self.robot.cnt -= 1
-                time.sleep(0.5)
                 if self.robot.cnt <= 0:
                     simplified = self.path_to_rdp(path)
                     self.vis.publish(self.marker_strip(simplified))

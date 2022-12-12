@@ -42,7 +42,7 @@
             "type": "linkway",
             "margin": 20,
             "position": {
-                "x": 150,
+                "x": 155,
                 "y": 80
             },
             "connection": "com1_l1_outdoor"
@@ -99,7 +99,7 @@
             "type": "linkway",
             "margin": 40,
             "position": {
-                "x": 71,
+                "x": 50,
                 "y": 124
             },
             "connection": "as6_entry"
@@ -138,8 +138,8 @@
             "type": "indoor",
             "margin": 20,
             "position":{
-                "x": 880,
-                "y": 206
+                "x": 855,
+                "y": 216
             },
             "connection": "com1_l2_linkway"
         },
@@ -158,8 +158,8 @@
             "type": "indoor",
             "margin": 60,
             "position":{
-                "x": 960,
-                "y": 190
+                "x": 940,
+                "y": 155
             },
             "connection": "com1_l1_linkway"
         },
@@ -187,7 +187,7 @@
             "margin": 40,
             "position":{
                 "x": 310,
-                "y": 363
+                "y": 370
             },
             "connection": "com1_l1_tocom2"
         },
@@ -236,8 +236,8 @@
 	    "type": "linkway",
 	    "margin": 40,
 	    "position":{
-		  "x": 1132,
-		  "y": 333
+		  "x": 1040,
+		  "y": 262
 	    },
 	    "connection": "com3_sr11"
 	},
