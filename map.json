@@ -20,9 +20,9 @@
         {
             "id": "com1_l1_tocom2",
             "type": "linkway",
-            "margin": 40,
+            "margin": 60,
             "position": {
-                "x": 986,
+                "x": 996,
                 "y": 224
             },
             "connection": "com1_l1_tocom2_outdoor"
@@ -186,7 +186,7 @@
             "type": "linkway",
             "margin": 40,
             "position":{
-                "x": 310,
+                "x": 300,
                 "y": 370
             },
             "connection": "com1_l1_tocom2"
@@ -214,7 +214,7 @@
         {
             "id": "com3_sr11",
             "type": "linkway",
-            "margin": 20,
+            "margin": 40,
             "position":{
                 "x": 769,
                 "y": 175

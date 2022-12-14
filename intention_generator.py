@@ -176,7 +176,10 @@ class Planner(object):
             points.append([pts.position.x, pts.position.y])
         simplified = np.array(rdp.rdp(points, Planner.tolerance))
         if len(simplified) == 2:
-            simplified = np.vstack([simplified[0], (simplified[0]+simplified[1])/2, simplified[1]])
+            # simplified = np.vstack([simplified[0], (simplified[0]+simplified[1])/2, simplified[1]])
+            # direct use forward
+            self.simplified = simplified
+            return simplified
         intention = self.simplified_to_intentions(simplified)
         print ("before maker_text", simplified.shape, intention.shape)
         self.marker_text(simplified, intention)

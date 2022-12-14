@@ -39,6 +39,8 @@ import networkx as nx
 import json
 
 # ******************** GLOBAL VARIBLES *************** #
+global cnt
+cnt = 0
 global pub_initial
 global pub_goal
 global pose # robot pose
@@ -189,7 +191,8 @@ def handle_milestone(G, milestone):
     # Params().put("NavDestination", json.dumps(dest))
 
 def callback(msg):
-    global pose, pm, milestone, G, path, checkpoints
+    global pose, pm, milestone, G, path, checkpoints, cnt
+    cnt += 1
     pose = msg.pose.pose.position
     quat = msg.pose.pose.orientation
     yaw = euler_from_quaternion(quat.x, quat.y, quat.z, quat.w)
@@ -256,7 +259,7 @@ def callback(msg):
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
               # publish_initial_position(pos[0], pos[1], yaw-0.24299)
               # publish_initial_position(pos[0], pos[1], yaw-0.271799)
-              publish_initial_position(pos[0], pos[1], -np.pi/2)
+              publish_initial_position(pos[0], pos[1], -np.pi/2-0.04)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
           milestone = path[1]
@@ -270,7 +273,8 @@ def callback(msg):
         state_msg.state=node
         pm.send("state", state_msg)
         # draw(G, path)
-      pm.send('info', info_dat)
+      if cnt % 30 == 0:
+        pm.send('info', info_dat)
       # pm.send("info", info_dat)
     else:
       # delegate to GPS module
