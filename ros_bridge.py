@@ -259,7 +259,7 @@ def callback(msg):
             elif last_floorplan == "as6_l1" and node['floorplanId'] == "com1_l1":
               # publish_initial_position(pos[0], pos[1], yaw-0.24299)
               # publish_initial_position(pos[0], pos[1], yaw-0.271799)
-              publish_initial_position(pos[0], pos[1], -np.pi/2-0.04)
+              publish_initial_position(pos[0], pos[1], -np.pi/2-0.05)
             else:
               publish_initial_position(pos[0], pos[1], yaw)
           milestone = path[1]

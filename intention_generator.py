@@ -166,6 +166,8 @@ class Planner(object):
         self.simplified = None
         self.pts = None
         self.intentions = None
+        self.last_track=-1
+        self.last_dist = 1
         print ("init done!")
 
     def path_to_rdp(self, path):
@@ -306,7 +308,53 @@ class Planner(object):
         diff = self.simplified-cur_pose
         dist = np.linalg.norm(diff, axis=1)
         idx = np.argmin(dist)
-        print  ("dist", dist[idx])
+        if idx == 0:
+            idx = max(idx, self.last_track)
+        self.last_track = idx
+        increase = dist[idx] - self.last_dist
+        self.last_dist = dist[idx]
+        print  ("dist", dist[idx], "increase", increase)
+        if dist[idx] > self.RADIUS/2 and increase > 1e-4:
+            # pass one junction
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp = rospy.Time.now()
+            marker.type = Marker.LINE_STRIP
+            marker.scale.x = 0.8
+            marker.scale.y = 1
+            marker.color.a = 1
+            marker.color.r = 1
+            marker.color.g = 0.1
+            marker.color.b = 0.1
+            p = Point()
+            p.x = self.robot.position.position.x
+            p.y = self.robot.position.position.y
+            marker.points.append(p)
+
+            p = Point()
+            p.x = self.simplified[idx][0]
+            p.y = self.simplified[idx][1]
+            marker.points.append(p)
+            self.vis_tracker.publish(marker)
+            self.pub_intention.publish(Planner.INTENTIONS[Planner.INTENTIONS_IDX[Planner.FORWARD]])
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.type = Marker.TEXT_VIEW_FACING
+            marker.scale.z = 8
+            marker.scale.x = 1.7
+            marker.scale.y = 1
+            marker.color.a = 1
+            marker.color.r = 0.1
+            marker.color.g = 1
+            marker.color.b = 0.1
+            marker.pose = self.robot.position
+            marker.text = self.FORWARD
+            self.vis_current.publish(marker)
+            self.last_track = idx
+            return
+
+
+
         if dist[idx] > self.RADIUS:
             marker = Marker()
             marker.header.frame_id = "map"
@@ -367,7 +415,8 @@ class Planner(object):
             p.x = self.pts[0][0]
             p.y = self.pts[0][1]
             marker.points.append(p)
-            intention = self.handle_orientation(self.pts[0]-self.simplified[0])
+            # intention = self.handle_orientation(self.pts[0]-self.simplified[0])
+            intention = Planner.INTENTIONS_IDX[Planner.FORWARD]
         elif idx == len(self.simplified)-1:
             self.status = Planner.STATUS["end"]
             p = Point()
@@ -379,7 +428,10 @@ class Planner(object):
             p.x = self.simplified[idx][0]
             p.y = self.simplified[idx][1]
             marker.points.append(p)
-            intention = self.handle_orientation(self.simplified[idx]-self.pts[idx-1])
+            # intention = self.handle_orientation(self.simplified[idx]-self.pts[idx-1])
+            intention = self.intentions[-1]
+            if dist[idx] > self.RADIUS:
+                intention = Planner.INTENTIONS_IDX[Planner.FORWARD]
         else:
             self.status = Planner.STATUS["progress"]
 
@@ -434,6 +486,7 @@ class Planner(object):
                     simplified = self.path_to_rdp(path)
                     self.vis.publish(self.marker_strip(simplified))
                     self.robot.updateAssignedPosition(self.robot.position)
+                    self.last_track = -1
                     self.status=Planner.STATUS["start"]
 
     def marker_strip(self, pts):

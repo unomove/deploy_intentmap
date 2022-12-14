@@ -1,6 +1,6 @@
 {
-  "server":"192.168.80.102",
-  "client":"192.168.80.103",
+  "server":"127.0.0.1",
+  "client":"127.0.0.1",
   "source":{
     "id": "source",
     "floorplanId": "com1_l1",
