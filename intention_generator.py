@@ -292,9 +292,9 @@ class Planner(object):
         dist = np.linalg.norm(self.simplified[-1]-array([self.robot.position.position.x, self.robot.position.position.y]))
         if dist < 0.3:
             intention = Planner.INTENTIONS_IDX[Planner.STOP]
-        if angle_diff > Planner.min_angle:
+        if angle_diff > Planner.min_angle*2:
             intention = Planner.INTENTIONS_IDX[Planner.LEFT]
-        elif angle_diff < -Planner.min_angle:
+        elif angle_diff < -Planner.min_angle*2:
             intention = Planner.INTENTIONS_IDX[Planner.RIGHT]
         return intention
 
@@ -415,8 +415,8 @@ class Planner(object):
             p.x = self.pts[0][0]
             p.y = self.pts[0][1]
             marker.points.append(p)
-            # intention = self.handle_orientation(self.pts[0]-self.simplified[0])
-            intention = Planner.INTENTIONS_IDX[Planner.FORWARD]
+            intention = self.handle_orientation(self.pts[0]-self.simplified[0])
+            # intention = Planner.INTENTIONS_IDX[Planner.FORWARD]
         elif idx == len(self.simplified)-1:
             self.status = Planner.STATUS["end"]
             p = Point()
