@@ -314,7 +314,7 @@ class Planner(object):
         increase = dist[idx] - self.last_dist
         self.last_dist = dist[idx]
         print  ("dist", dist[idx], "increase", increase)
-        if dist[idx] > self.RADIUS/2 and increase > 1e-4:
+        if dist[idx] > self.RADIUS/1.3 and increase > 1e-4:
             # pass one junction
             marker = Marker()
             marker.header.frame_id = "map"
