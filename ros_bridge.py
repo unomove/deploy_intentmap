@@ -8,12 +8,24 @@ import sys
 import rospy
 from sensor_msgs.msg import NavSatFix, Image
 from nav_msgs.srv import GetMap, GetMapResponse
-from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
+from nav_msgs.msg import Odometry, Path
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Point, Quaternion, PoseStamped, Pose2D
 from pyquaternion import Quaternion
+from std_msgs.msg import String
+import tf
 import cv2
 import time
 import json
 import numpy as np
+
+# global text
+INPLACE_LEFT='inplace_left'
+INPLACE_RIGHT='inplace_right'
+FORWARD='forward'
+BACKWARD='backward'
+STOP='stop'
+LEFT='left'
+RIGHT='right'
 
 # using ZMQ, since we will have remote subscriber
 os.environ["ZMQ"] = "1"
@@ -40,9 +52,13 @@ import json
 
 # ******************** GLOBAL VARIBLES *************** #
 global cnt
+global headingDeg
 cnt = 0
+headingDeg = 0
 global pub_initial
 global pub_goal
+global pub_intention
+global pub_gps_path
 global pose # robot pose
 global G # map graph
 global milestone# global milestone in map graph
@@ -64,7 +80,7 @@ floorplans = {}
 for floorplan in json_message:
   floorplans[floorplan['id']] = floorplan
 
-pm = messaging.PubMaster(['pose', 'liveLocationKalman', 'state', "info"])
+pm = messaging.PubMaster(['pose', 'gpsLocationExternal', 'state', "info"])
 
 def euler_from_quaternion(x, y, z, w):
   """
@@ -280,16 +296,29 @@ def callback(msg):
       # delegate to GPS module
       pass
 
+def pose_to_StampedPose(pose, time, frame=None):
+    ps = PoseStamped()
+    ps.header.stamp = time
+    ps.header.frame_id = frame
+    ps.pose.position = Point(pose[0], pose[1], 0)
+    quaternion = tf.transformations.quaternion_from_euler(0, 0, pose[2])
+    ps.pose.orientation = Quaternion(*quaternion)
+    return ps
+
 # deprecated, used for gridmap
 def floorplan_thread():
-  global G, milestone, current_floorplan_id, path
+  global G, milestone, current_floorplan_id, path, pub_gps_path, pub_intention
   # load graph, graph logic here.
   G = load_graph()
 
   publisher = rospy.Publisher(FLOORPLAN_TOPIC, Image, queue_size=10)
+    
+  ## Publish raw GPS path
+  pub_gps_path = rospy.Publisher("raw_gps_path", Path, queue_size=1)
 
-  sm = messaging.SubMaster(['floorplan', 'source', 'target'], addr=ADDR)
+  sm = messaging.SubMaster(['floorplan', 'source', 'target', 'navRoute', "navInstruction"], addr=ADDR)
   while True:
+    # print ("here")
     sm.update()
     if sm.updated['floorplan']:
       current_floorplan_id = sm['floorplan'].id
@@ -348,70 +377,73 @@ def floorplan_thread():
 
       milestone = path[1]
       handle_milestone(G, milestone)
+    if sm.updated["navRoute"]:
+      # publish gps path
+      gps_path = Path()
+      gps_path.header.frame_id = 'map'
+      gps_path.header.stamp = rospy.get_rostime()
+      print ("navRoute", len(sm['navRoute'].coordinates))
+      for x in list(sm['navRoute'].coordinates):
+        map_pos = [x.longitude, x.latitude]
+        gps_path.poses.append(pose_to_StampedPose([map_pos[0], map_pos[1], 0], gps_path.header.stamp, 'map'))
+      pub_gps_path.publish(gps_path)
+    if sm.updated["navInstruction"]:
+      if "left" in sm['navInstruction'].maneuverModifier:
+        pub_intention.publish(LEFT)
+      elif "right" in sm['navInstruction'].maneuverModifier:
+        pub_intention.publish(RIGHT)
+      else:
+        pub_intention.publish(FORWARD)
 
-# ****************** Test Use ***************** #
-# # in publisher
-# pm = messaging.PubMaster(['liveLocationKalman'])
-# dat = messaging.new_message('liveLocationKalman')
-# gps_dat.liveLocationKalman = {
-#   "gpsWeek":0,
-#   "gpsTimeOfWeek":0,
-#   "status":"uninitialized",
-#   "unixTimestampMillis":1632948964999,
-#   "inputsOK":True,
-#   "gpsOK":False,
-#   "velocityCalibrated":{
-#     "value" : [29.00776253842281, -0.10930662366976479, 0.28999936306154739],
-#     "std" : [0.22529312857341197, 0.34050586122310345, 0.19542205107799951],
-#     "valid" : True },
-#   "calibratedOrientationNED" : {
-#     "value" : [0.00011318853898166816, -0.083885195422878811, -1.1017716045869208],
-#     "std" : [nan, nan, nan],
-#     "valid" : True }
-# }
-
-def update_gps_dat(lat, lon, alt, ts):
-  global gps_dat
-  gps_dat.liveLocationKalman.unixTimestampMillis = ts
-  gps_dat.liveLocationKalman.positionGeodetic = {
-    "value" : [lat, lon, alt],
-    "std" : [nan, nan, nan],
-    "valid" : True
-  }
-  gps_dat.liveLocationKalman.gpsOK = True
-  gps_dat.liveLocationKalman.status = "valid"
+def sim_gps():
+  route = [[103.772798,1.296927],[103.772737,1.296821],[103.772672,1.296731],[103.772573,1.296623],[103.77242,1.296484],[103.772377,1.296445],[103.772367,1.296438],[103.772229,1.296334],[103.772094,1.296285],[103.772082,1.296283],[103.771993,1.296262],[103.771844,1.296221],[103.771712,1.2962],[103.771004,1.2962],[103.770905,1.296202],[103.7709,1.296154],[103.770889,1.296054],[103.770864,1.295876],[103.770801,1.295687],[103.770734,1.29551],[103.770651,1.295347],[103.770603,1.295183],[103.770574,1.295056],[103.770558,1.294957],[103.770548,1.294791],[103.770571,1.294593],[103.770612,1.294453],[103.770646,1.294339],[103.770712,1.294174],[103.770752,1.294105],[103.770907,1.293902],[103.771023,1.29379],[103.771147,1.293698],[103.771275,1.293622],[103.771431,1.29355],[103.771597,1.293505],[103.771758,1.293476],[103.771965,1.293453],[103.772113,1.293427],[103.772125,1.293481],[103.772167,1.293467],[103.772202,1.293611],[103.772296,1.293801],[103.772475,1.294024],[103.772644,1.294166],[103.772762,1.294286],[103.772977,1.294585],[103.772956,1.294589],[103.772892,1.294579],[103.772847,1.294561],[103.773049,1.294927],[103.773079,1.294943],[103.773117,1.294959],[103.773142,1.294964],[103.773252,1.295083]]
+  for i in range(20):
+    for pos in route:
+      gps = messaging.new_message("gpsLocationExternal")
+      gps.gpsLocationExternal.latitude = pos[1]
+      gps.gpsLocationExternal.longitude= pos[0]
+      gps.gpsLocationExternal.altitude = 40
+      gps.gpsLocationExternal.timestamp = 000
+      print ("gps sent")
+      pm.send("gpsLocationExternal", gps)
+      time.sleep(1)
 
 def bridge_gps(msg):
+  global headingDeg
   # global gps_dat
-  gps_dat = messaging.new_message('liveLocationKalman')
-  stamp = int(msg.header.stamp.to_sec() * 10e3)
-  lat = msg.latitude
-  lon = msg.longitude
-  alt = msg.altitude
-  # update_gps_dat(lat, lon, alt, stamp)
-  gps_dat.liveLocationKalman.unixTimestampMillis = stamp
-  gps_dat.liveLocationKalman.positionGeodetic = {
-    "value" : [lat, lon, alt],
-    "std" : [nan, nan, nan],
-    "valid" : True
-  }
-  gps_dat.liveLocationKalman.gpsOK = True
-  gps_dat.liveLocationKalman.status = "valid"
-  print ("here")
-  pm.send('liveLocationKalman', gps_dat)
+  gps = messaging.new_message("gpsLocationExternal")
+  gps.gpsLocationExternal.latitude = msg.latitude
+  gps.gpsLocationExternal.longitude= msg.longitude
+  gps.gpsLocationExternal.altitude = msg.altitude
+  gps.gpsLocationExternal.bearingDeg = headingDeg
+  gps.gpsLocationExternal.timestamp = int(msg.header.stamp.to_sec() * 10e3)
+  print ("gps sent, current heading:", headingDeg)
+  pm.send("gpsLocationExternal", gps)
+
+def cb_orientation(msg):
+  global headingDeg
+  (roll, pitch, yaw) = tf.transformations.euler_from_quaternion([msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w])
+  # print ("headingDeg:", roll, pitch, yaw)
+  headingDeg = math.degrees(yaw)
 
 def main():
-  global pub_initial, pub_goal
+  global pub_initial, pub_goal, pub_gps_path, pub_intention
   rospy.init_node("ros_bridge")
   rospy.Rate(30)
-  sub = rospy.Subscriber('/pose_estimation', PoseWithCovarianceStamped, callback)
+  # sub = rospy.Subscriber('/pose_estimation', PoseWithCovarianceStamped, callback)
   pub_initial = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=10)
   pub_goal = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
-  #rospy.Subscriber("/mavros/global_position/raw/fix", NavSatFix, bridge_gps)
+
+  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$# for outdoor gps module
+  rospy.Subscriber("/mavros/global_position/global", NavSatFix, bridge_gps)
+  rospy.Subscriber("/map_odometry", Odometry, cb_orientation)
+  pub_intention = rospy.Publisher('/dlm_intention', String, queue_size=1)
 
   # floorplan thread
   t1 = threading.Thread(target=floorplan_thread)
   t1.start()
+
+  # sim_gps()
 
 if __name__ == '__main__':
   main()

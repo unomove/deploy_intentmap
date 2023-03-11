@@ -1,4 +1,6 @@
 import cereal.messaging as messaging
+import math
+from math import nan, pi
 import threading
 import time
 import json
@@ -81,9 +83,9 @@ class RepeatTimer(threading.Timer):
       print(' \n')  
 
 # in subscriber
-sm_remote = messaging.SubMaster({"liveLocationKalman", "pose", "state", "info"}, addr=HOST)
+sm_remote = messaging.SubMaster({"gpsLocationExternal", "pose", "state", "info"}, addr=HOST)
 sm = messaging.SubMaster({"navInstruction", "navRoute"}) # local message
-pm = messaging.PubMaster({"source", "target", "floorplan"})
+pm = messaging.PubMaster({"source", "target", "floorplan", "liveLocationKalman"})
 
 data = {
   "source": source,
@@ -142,8 +144,43 @@ def main():
         print ("new floorplan", floorplan_msg)
         print (f"resolution: {floorplans[current_floorplan_id]['resolution']}")
         pm.send("floorplan", floorplan_msg)
-    if sm_remote.updated['liveLocationKalman']:
-      print (sm_remote['liveLocationKalman'])
+    if sm_remote.updated['gpsLocationExternal']:
+        gps_dat = messaging.new_message('liveLocationKalman')
+        #TODO add Kalman filter here.
+        stamp = sm_remote['gpsLocationExternal'].timestamp
+        lat = sm_remote['gpsLocationExternal'].latitude
+        lon = sm_remote['gpsLocationExternal'].longitude
+        alt = sm_remote['gpsLocationExternal'].altitude
+        gps_dat.liveLocationKalman = {
+          "gpsWeek":0,
+          "gpsTimeOfWeek":0,
+          "status":"uninitialized",
+          "unixTimestampMillis":1632948964999,
+          "inputsOK":True,
+          "gpsOK":False,
+          "velocityCalibrated":{
+            "value" : [1.00776253842281, -0.10930662366976479, 0.28999936306154739],
+            "std" : [0.22529312857341197, 0.34050586122310345, 0.19542205107799951],
+            "valid" : True },
+          "calibratedOrientationNED" : {
+            "value" : [0.00011318853898166816, -0.083885195422878811, math.radians(sm_remote['gpsLocationExternal'].bearingDeg)],
+            "std" : [nan, nan, nan],
+            "valid" : True }
+        }
+        # update_gps_dat(lat, lon, alt, stamp)
+        gps_dat.liveLocationKalman.unixTimestampMillis = stamp
+        gps_dat.liveLocationKalman.positionGeodetic = {
+          "value" : [lat, lon, alt],
+          "std" : [nan, nan, nan],
+          "valid" : True
+        }
+        gps_dat.liveLocationKalman.gpsOK = True
+        gps_dat.liveLocationKalman.status = "valid"
+        print ("receive GPS", gps_dat)
+        pm.send('liveLocationKalman', gps_dat)
+    if sm.updated["navRoute"]:
+      print (sm["navRoute"])
+      print (sm["navInstruction"])
     # print(sm['liveLocationKalman'])
     print ("#####################################")
 
